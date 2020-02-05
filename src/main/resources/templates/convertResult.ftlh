@@ -2,21 +2,17 @@
 
 <@p.page>
     <link rel="stylesheet" type="text/css" href="css/Style.css">
-    <table>
-        <tr>
-            <td>${from}</td>
-            <td>${to}</td>
-        </tr>
-        <tr>
-            <td>${fromAmount}</td>
-            <td>${convertRes}</td>
-        </tr>
-        <tr>
-            <td>
-                <button><a href="/main">Main page</a></button>
-            </td>
-        </tr>
-    </table>
+    <div class="container">
+        <h1>Результат</h1>
+    <article class="line">${from}</article>
+    <article class="line">${to}</article>
+
+    <article class="line">${fromAmount}</article>
+    <article class="line">${convertRes}</article>
+        <a href="/main">Main page</a>
+    </div>
+
+
 
     <#list histories as history>
         <#if history?index == 5>
