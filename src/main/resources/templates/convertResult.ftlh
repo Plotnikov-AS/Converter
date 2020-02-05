@@ -18,22 +18,23 @@
         <#if history?index == 5>
             <#break>
         </#if>
+        <div class="container-history">
         <table>
             <tr>
                 <th>
-                    From
+                    Исходная валюта
                 </th>
                 <th>
-                    To
+                    Целевая валюта
                 </th>
                 <th>
-                    From amount
+                    Исходная сумма
                 </th>
                 <th>
-                    To amount
+                    Получаемая сумма
                 </th>
                 <th>
-                    Date
+                    Дата
                 </th>
             </tr>
             <tr>
@@ -54,5 +55,6 @@
                 </td>
             </tr>
         </table>
+        </div>
     </#list>
 </@p.page>
