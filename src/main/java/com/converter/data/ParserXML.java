@@ -43,7 +43,7 @@ public class ParserXML {
 
         NodeList nodeList = doc.getElementsByTagName("ValCurs");
         Node nNode = nodeList.item(0);
-        Set<Currency> currencies = new TreeSet<>((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        Set<Currency> currencies = new TreeSet<>();
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
             NodeList childsList = nNode.getChildNodes();
             for (int i = 0; i < childsList.getLength(); i++) {
@@ -55,7 +55,9 @@ public class ParserXML {
                 currency.setNominal(Integer.parseInt(eElement.getElementsByTagName("Nominal").item(0).getTextContent()));
                 currency.setName(eElement.getElementsByTagName("Name").item(0).getTextContent());
                 currency.setValue(Double.parseDouble(eElement.getElementsByTagName("Value").item(0).getTextContent().replaceAll(",",".")));
+                currency.setDate(new Date());
                 currencies.add(currency);
+
             }
         }
 
@@ -69,6 +71,7 @@ public class ParserXML {
         rub.setCharcode("RUB");
         rub.setNominal(1);
         rub.setValue(1.00);
+        rub.setDate(new Date());
         currencies.add(rub);
 
         return currencies;

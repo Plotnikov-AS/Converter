@@ -29,7 +29,9 @@
             </tr>
             <tr>
                 <td>
-                    <input type="text" name="from">
+                    <label>
+                        <input type="number" min=0 name="from">
+                    </label>
                 </td>
             </tr>
         </table>

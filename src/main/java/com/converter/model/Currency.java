@@ -1,10 +1,12 @@
 package com.converter.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
-public class Currency {
+public class Currency implements Comparable {
     @Id
     private String id;
     private Double value;
@@ -12,6 +14,8 @@ public class Currency {
     private String charcode;
     private String numcode;
     private String name;
+    @Column(name = "updatedate")
+    private Date date;
 
     public Currency() {
     }
@@ -62,5 +66,19 @@ public class Currency {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Currency currency = (Currency) o;
+        return currency.getName().compareToIgnoreCase(this.getName());
     }
 }

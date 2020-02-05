@@ -28,6 +28,8 @@ public class ConvertHistory {
 
     private Date date;
 
+    private Double courseOnDate;
+
     public ConvertHistory() {
     }
 
@@ -85,5 +87,13 @@ public class ConvertHistory {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Double getCourseOnDate() {
+        return courseOnDate;
+    }
+
+    public void setCourseOnDate(Double courseOnDate) {
+        this.courseOnDate = courseOnDate;
     }
 }

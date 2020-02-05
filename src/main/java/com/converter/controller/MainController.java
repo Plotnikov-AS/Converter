@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -31,34 +32,42 @@ public class MainController {
 
     @GetMapping("/main")
     public String mainPage(Model model) {
+        Map<String, String> curCode2Name = downloadCurrencies();
+        model.addAttribute("curCode2Name", curCode2Name);
+
+        return "main";
+    }
+
+    public Map<String, String> downloadCurrencies() {
         Set<Currency> currencies;
-        currencies = downloadCurrencies();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        if (dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))){
+            currencies = new TreeSet<>(currencyRepo.findAll());
+        }
+        else {
+            currencies = ParserXML.parse();
+            assert currencies != null;
+            for (Currency currency : currencies) {
+                currencyRepo.save(currency);
+            }
+        }
         Map<String, String> curCode2Name = new TreeMap<>();
         for (Currency currency : currencies) {
             curCode2Name.put(currency.getName(), currency.getCharcode());
         }
-        curCode2Name.put("Российский рубль", "RUB");
-        model.addAttribute("curCode2Name", curCode2Name);
-        return "main";
-    }
 
-    public Set<Currency> downloadCurrencies() {
-        Set<Currency> currencies;
-        currencies = ParserXML.parse();
-        assert currencies != null;
-        for (Currency currency : currencies) {
-            currencyRepo.save(currency);
-        }
-        return currencies;
+        return curCode2Name;
     }
 
     @PostMapping("/convert")
-    public String convert(@RequestParam("from") String fromStr,
+    public String convert(@RequestParam("from") String fromAmountStr,
                           @RequestParam("fromCode") String fromCharcode,
                           @RequestParam("toCode") String toCharcode,
                           Model model) {
 
-        Double fromAmount = Double.parseDouble(fromStr);
+        Double fromAmount = Double.parseDouble(fromAmountStr);
+
         Double convertRes;
         if (fromCharcode.equals(toCharcode)) {
             convertRes = fromAmount;
@@ -75,6 +84,7 @@ public class MainController {
                 fromAmount,
                 convertRes,
                 new Date(),
+                currencyRepo.findByCharcode(toCharcode).getValue(),
                 user);
         List<ConvertHistory> histories = convertHistoryRepo.findAllByUserId(user.getId());
 
@@ -83,6 +93,7 @@ public class MainController {
         model.addAttribute("from", currencyRepo.findByCharcode(fromCharcode).getName());
         model.addAttribute("to", currencyRepo.findByCharcode(toCharcode).getName());
         model.addAttribute("histories", histories);
+
         return "convertResult";
 
     }
@@ -92,6 +103,7 @@ public class MainController {
                                Double fromAmount,
                                Double toAmount,
                                Date date,
+                               Double courseOnDate,
                                User user) {
         ConvertHistory convertHistory = new ConvertHistory();
 
@@ -102,6 +114,7 @@ public class MainController {
         convertHistory.setFromAmount(fromAmount);
         convertHistory.setToAmount(toAmount);
         convertHistory.setDate(date);
+        convertHistory.setCourseOnDate(courseOnDate);
         convertHistoryRepo.save(convertHistory);
     }
 }
