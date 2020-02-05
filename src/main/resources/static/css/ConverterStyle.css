@@ -1,0 +1,39 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+.container {
+    width: 700px;
+    height: 300px;
+    background-color: rgba(220,220,220,0.22);
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.choice {
+    margin: 20px 20px;
+    display: inline-block;
+}
+
+select {
+    height: 30px;
+}
+
+.result {
+       width: 300px;
+       height: 30px;
+       margin: 0 20px;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: darkgrey;
+    display: flex;
+    margin: 20px auto;
+}

@@ -1,39 +1,31 @@
-<#import "parts/page.ftlh" as p>
+ <#import "parts/page.ftlh" as p>
 <#import "parts/login.ftlh" as l>
 
 <@p.page>
-    Converter
+    <link rel="stylesheet" type="text/css" href="css/ConverterStyle.css">
+    <div class="container">
+                <h1>Конвертер</h1>
     <form action="/convert" method="post">
-        <table>
-            <tr>
-                <td>
-                    <label>
-                        From<br>
+
+                    <label class="choice">
                         <select name="fromCode">
                             <#list curCode2Name as key, value>
                                 <option value="${value}">${key}</option>
                             </#list>
                         </select>
                     </label>
-                </td>
-                <td>
-                    <label>
-                        To<br>
+
+                    <label class="choice">
                         <select name="toCode">
                             <#list curCode2Name as key, value>
                                 <option value="${value}">${key}</option>
                             </#list>
                         </select>
                     </label>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" name="from">
-                </td>
-            </tr>
-        </table>
-        <button type="submit">Convert</button>
+                    <input type="text" name="from" class="result">
+       <button type="submit">Конвертировать</button>
     </form>
+
 <@l.logout/>
 </@p.page>
+</div>
