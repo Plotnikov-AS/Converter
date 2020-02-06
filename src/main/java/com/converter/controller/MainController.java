@@ -42,7 +42,8 @@ public class MainController {
         Set<Currency> currencies;
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        if (dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))) {
+        if (currencyRepo.findByCharcode("RUB") != null &&
+                dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))) {
             currencies = new TreeSet<>(currencyRepo.findAll());
         } else {
             currencies = ParserXML.parse();
@@ -65,31 +66,33 @@ public class MainController {
                           @RequestParam("toCode") String toCharcode,
                           Model model) {
 
-        Double fromAmount = Double.parseDouble(fromAmountStr);
+        if (!fromAmountStr.isEmpty()) {
+            Double fromAmount = Double.parseDouble(fromAmountStr);
 
-        Double convertRes;
-        if (fromCharcode.equals(toCharcode)) {
-            convertRes = fromAmount;
-        } else {
-            Double toValue = currencyRepo.findByCharcode(toCharcode).getCourse();
-            Integer toNominal = currencyRepo.findByCharcode(toCharcode).getNominal();
-            convertRes = fromAmount * toValue / toNominal;
+            Double convertRes;
+            if (fromCharcode.equals(toCharcode)) {
+                convertRes = fromAmount;
+            } else {
+                Double toValue = currencyRepo.findByCharcode(toCharcode).getCourse();
+                Integer toNominal = currencyRepo.findByCharcode(toCharcode).getNominal();
+                convertRes = fromAmount * toValue / toNominal;
+            }
+            Double courseFrom = currencyRepo.findByCharcode(fromCharcode).getCourse() / currencyRepo.findByCharcode(fromCharcode).getNominal();
+            Double courseTo = currencyRepo.findByCharcode(toCharcode).getCourse() / currencyRepo.findByCharcode(toCharcode).getNominal();
+            Double courseOnDate = courseFrom / courseTo;
+
+            saveInHistory(fromCharcode, toCharcode, fromAmount, convertRes, courseOnDate);
+            List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
+
+            model.addAttribute("convertRes", convertRes);
+            model.addAttribute("fromAmount", fromAmount);
+            model.addAttribute("from", currencyRepo.findByCharcode(fromCharcode).getName());
+            model.addAttribute("to", currencyRepo.findByCharcode(toCharcode).getName());
+            model.addAttribute("histories", histories);
+
+            return "convertResult";
         }
-        Double courseFrom = currencyRepo.findByCharcode(fromCharcode).getCourse() / currencyRepo.findByCharcode(fromCharcode).getNominal();
-        Double courseTo = currencyRepo.findByCharcode(toCharcode).getCourse() / currencyRepo.findByCharcode(toCharcode).getNominal();
-        Double courseOnDate = courseFrom / courseTo;
-
-        saveInHistory(fromCharcode, toCharcode, fromAmount, convertRes, courseOnDate);
-        List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
-
-        model.addAttribute("convertRes", convertRes);
-        model.addAttribute("fromAmount", fromAmount);
-        model.addAttribute("from", currencyRepo.findByCharcode(fromCharcode).getName());
-        model.addAttribute("to", currencyRepo.findByCharcode(toCharcode).getName());
-        model.addAttribute("histories", histories);
-
-        return "convertResult";
-
+        return "redirect:/main";
     }
 
     private void saveInHistory(String fromCharcode, String toCharcode,

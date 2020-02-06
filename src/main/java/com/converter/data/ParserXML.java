@@ -22,8 +22,8 @@ public class ParserXML {
     public static Set<Currency> parse() {
         try {
             InputStream inputStream = new URL("http://www.cbr.ru/scripts/XML_daily.asp").openStream();
-            Files.copy(inputStream, Paths.get("src/main/java/com/converter/data/currency.xml"), StandardCopyOption.REPLACE_EXISTING);
-            File xmlFile = new File("src/main/java/com/converter/data/currency.xml");
+            Files.copy(inputStream, Paths.get("./src/main/java/com/converter/data/currency.xml"), StandardCopyOption.REPLACE_EXISTING);
+            File xmlFile = new File("./src/main/java/com/converter/data/currency.xml");
             if (xmlFile.exists() && xmlFile.length() > 0) {
                 return readXml(xmlFile);
             } else {
