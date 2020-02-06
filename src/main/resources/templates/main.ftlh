@@ -6,7 +6,6 @@
     <div class="container">
                 <h1>Конвертер</h1>
     <form action="/convert" method="post">
-
                     <label class="choice">
                         <select name="fromCode">
                             <#list curCode2Name as key, value>
@@ -22,7 +21,7 @@
                             </#list>
                         </select>
                     </label>
-                    <input type="text" name="from" class="result">
+                    <input type="number" min="0" name="from" class="result">
        <button type="submit">Конвертировать</button>
     </form>
 

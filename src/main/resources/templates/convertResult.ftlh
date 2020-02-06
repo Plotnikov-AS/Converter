@@ -11,13 +11,6 @@
     <article class="line">${convertRes}</article>
         <a href="/main">Main page</a>
     </div>
-
-
-
-    <#list histories as history>
-        <#if history?index == 5>
-            <#break>
-        </#if>
         <div class="container-history">
         <table>
             <tr>
@@ -34,9 +27,13 @@
                     Получаемая сумма
                 </th>
                 <th>
+                    Курс на дату (1 к 1)
+                </th>
+                <th>
                     Дата
                 </th>
             </tr>
+                <#foreach history in histories>
             <tr>
                 <td>
                     ${history.fromCurrency}
@@ -51,10 +48,13 @@
                     ${history.toAmount}
                 </td>
                 <td>
+                    ${history.courseOnDate}
+                </td>
+                <td>
                     ${history.date?date}
                 </td>
             </tr>
+            </#foreach>
         </table>
         </div>
-    </#list>
 </@p.page>

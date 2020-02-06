@@ -14,7 +14,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ParserXML {
     public static Set<Currency> parse() {
@@ -24,8 +26,7 @@ public class ParserXML {
             File xmlFile = new File("src/main/java/com/converter/data/currency.xml");
             if (xmlFile.exists() && xmlFile.length() > 0) {
                 return readXml(xmlFile);
-            }
-            else {
+            } else {
                 return null;
             }
         } catch (Exception e) {
@@ -54,7 +55,7 @@ public class ParserXML {
                 currency.setCharcode(eElement.getElementsByTagName("CharCode").item(0).getTextContent());
                 currency.setNominal(Integer.parseInt(eElement.getElementsByTagName("Nominal").item(0).getTextContent()));
                 currency.setName(eElement.getElementsByTagName("Name").item(0).getTextContent());
-                currency.setValue(Double.parseDouble(eElement.getElementsByTagName("Value").item(0).getTextContent().replaceAll(",",".")));
+                currency.setCourse(Double.parseDouble(eElement.getElementsByTagName("Value").item(0).getTextContent().replaceAll(",", ".")));
                 currency.setDate(new Date());
                 currencies.add(currency);
 
@@ -70,7 +71,7 @@ public class ParserXML {
         rub.setName("Российский рубль");
         rub.setCharcode("RUB");
         rub.setNominal(1);
-        rub.setValue(1.00);
+        rub.setCourse(1.00);
         rub.setDate(new Date());
         currencies.add(rub);
 

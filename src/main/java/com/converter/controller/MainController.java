@@ -42,10 +42,9 @@ public class MainController {
         Set<Currency> currencies;
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        if (dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))){
+        if (dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))) {
             currencies = new TreeSet<>(currencyRepo.findAll());
-        }
-        else {
+        } else {
             currencies = ParserXML.parse();
             assert currencies != null;
             for (Currency currency : currencies) {
@@ -72,21 +71,16 @@ public class MainController {
         if (fromCharcode.equals(toCharcode)) {
             convertRes = fromAmount;
         } else {
-            Double toValue = currencyRepo.findByCharcode(toCharcode).getValue();
+            Double toValue = currencyRepo.findByCharcode(toCharcode).getCourse();
             Integer toNominal = currencyRepo.findByCharcode(toCharcode).getNominal();
             convertRes = fromAmount * toValue / toNominal;
         }
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Double courseFrom = currencyRepo.findByCharcode(fromCharcode).getCourse() / currencyRepo.findByCharcode(fromCharcode).getNominal();
+        Double courseTo = currencyRepo.findByCharcode(toCharcode).getCourse() / currencyRepo.findByCharcode(toCharcode).getNominal();
+        Double courseOnDate = courseFrom / courseTo;
 
-        saveInHistory(
-                fromCharcode,
-                toCharcode,
-                fromAmount,
-                convertRes,
-                new Date(),
-                currencyRepo.findByCharcode(toCharcode).getValue(),
-                user);
-        List<ConvertHistory> histories = convertHistoryRepo.findAllByUserId(user.getId());
+        saveInHistory(fromCharcode, toCharcode, fromAmount, convertRes, courseOnDate);
+        List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
 
         model.addAttribute("convertRes", convertRes);
         model.addAttribute("fromAmount", fromAmount);
@@ -98,17 +92,13 @@ public class MainController {
 
     }
 
-    private void saveInHistory(String fromCharcode,
-                               String toCharcode,
-                               Double fromAmount,
-                               Double toAmount,
-                               Date date,
-                               Double courseOnDate,
-                               User user) {
+    private void saveInHistory(String fromCharcode, String toCharcode,
+                               Double fromAmount, Double toAmount, Double courseOnDate) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Date date = new Date();
+
         ConvertHistory convertHistory = new ConvertHistory();
-
         convertHistory.setUserId(user.getId());
-
         convertHistory.setFromCurrency(currencyRepo.findByCharcode(fromCharcode).getName());
         convertHistory.setToCurrency(currencyRepo.findByCharcode(toCharcode).getName());
         convertHistory.setFromAmount(fromAmount);

@@ -9,7 +9,7 @@ import java.util.Date;
 public class Currency implements Comparable {
     @Id
     private String id;
-    private Double value;
+    private Double course;
     private Integer nominal;
     private String charcode;
     private String numcode;
@@ -28,12 +28,12 @@ public class Currency implements Comparable {
         this.id = id;
     }
 
-    public Double getValue() {
-        return value;
+    public Double getCourse() {
+        return course;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setCourse(Double course) {
+        this.course = course;
     }
 
     public Integer getNominal() {
