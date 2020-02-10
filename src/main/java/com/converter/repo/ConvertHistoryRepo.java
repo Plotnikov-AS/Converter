@@ -19,7 +19,7 @@ public interface ConvertHistoryRepo extends JpaRepository<ConvertHistory, Long> 
 
     List<ConvertHistory> findAllByDateAndFromCurrencyAndToCurrencyOrderByDate(Date date, String fromCurrency, String toCurrency);
 
-    List<ConvertHistory> findTop5ByDateOrderByDateDesc(Date date);
+    List<ConvertHistory> findTop5ByDateOrderByTimeDesc(Date date);
 
     @Query(value = "SELECT convert_id FROM convert_history ORDER BY convert_id DESC LIMIT 1",
             nativeQuery = true)

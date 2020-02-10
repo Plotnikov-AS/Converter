@@ -27,6 +27,7 @@
                 <th>Получаемая сумма</th>
                 <th>Курс на дату (1 к 1)</th>
                 <th>Дата</th>
+                <th>Время</th>
             </tr>
             <#foreach history in histories>
                 <tr>
@@ -36,6 +37,7 @@
                     <td>${history.toAmount}</td>
                     <td>${history.courseOnDate}</td>
                     <td>${history.date?date}</td>
+                    <td>${history.time}</td>
                 </tr>
             </#foreach>
             <#else>

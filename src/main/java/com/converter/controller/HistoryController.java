@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +32,7 @@ public class HistoryController {
 
     @GetMapping
     public String showHistory(Model model) {
-        List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
+        List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByTimeDesc(new Date());
         List<Map<Object, Object>> curCodes2Names = currencyRepo.findAllCharcodesAndNames();
 
         model.addAttribute("curCodes2Names", curCodes2Names);
@@ -43,6 +47,8 @@ public class HistoryController {
                                 Model model) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Date date = new Date();
+        NumberFormat decFormat = new DecimalFormat("#0.00");
+        decFormat.setRoundingMode(RoundingMode.CEILING);
         Double courseFrom = currencyRepo.findByCharcode(fromCharcode).getCourse() / currencyRepo.findByCharcode(fromCharcode).getNominal();
         Double courseTo = currencyRepo.findByCharcode(toCharcode).getCourse() / currencyRepo.findByCharcode(toCharcode).getNominal();
         Double courseOnDate = courseFrom / courseTo;
@@ -55,14 +61,16 @@ public class HistoryController {
             toAmount = convert(fromAmount, toCharcode);
         }
 
+
         ConvertHistory convertHistory = new ConvertHistory();
         convertHistory.setUserId(user.getId());
         convertHistory.setFromCurrency(currencyRepo.findByCharcode(fromCharcode).getName());
         convertHistory.setToCurrency(currencyRepo.findByCharcode(toCharcode).getName());
-        convertHistory.setFromAmount(fromAmount);
-        convertHistory.setToAmount(toAmount);
+        convertHistory.setFromAmount(decFormat.format(fromAmount));
+        convertHistory.setToAmount(decFormat.format(toAmount));
         convertHistory.setDate(date);
-        convertHistory.setCourseOnDate(courseOnDate);
+        convertHistory.setTime(LocalTime.now());
+        convertHistory.setCourseOnDate(decFormat.format(courseOnDate));
         convertHistoryRepo.save(convertHistory);
 
         model.addAttribute("from", fromAmountStr);

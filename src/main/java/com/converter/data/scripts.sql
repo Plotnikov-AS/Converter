@@ -50,11 +50,15 @@ create table convert_history
     user_id        bigint,
     from_cur       varchar(255),
     to_cur         varchar(255),
-    from_amount    double precision,
-    to_amount      double precision,
+    from_amount    varchar(255),
+    to_amount      varchar(255),
     date           date,
     convert_id     bigserial not null
         constraint convert_history_pk
             primary key,
-    course_on_date double precision
+    course_on_date varchar(255),
+    time           time
 );
+
+alter table convert_history
+    owner to postgres;

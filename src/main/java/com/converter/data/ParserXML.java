@@ -5,7 +5,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -62,12 +61,11 @@ public class ParserXML {
             }
         }
 
-        //В странице центробанка нет значения для рубля
+        //На странице центробанка нет значения для рубля
         Currency rub = new Currency();
 
         rub.setId("R00001"); //Придуманное число
         rub.setNumcode("001"); //Придуманное число
-
         rub.setName("Российский рубль");
         rub.setCharcode("RUB");
         rub.setNominal(1);

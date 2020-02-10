@@ -1,6 +1,7 @@
 package com.converter.model;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
@@ -21,14 +22,17 @@ public class ConvertHistory {
     private String toCurrency;
 
     @Column(name = "from_amount")
-    private Double fromAmount;
+    private String fromAmount;
 
     @Column(name = "to_amount")
-    private Double toAmount;
+    private String toAmount;
 
     private Date date;
 
-    private Double courseOnDate;
+    private LocalTime time;
+
+    @Column(name = "course_on_date")
+    private String courseOnDate;
 
     public ConvertHistory() {
     }
@@ -65,19 +69,19 @@ public class ConvertHistory {
         this.toCurrency = toCurrency;
     }
 
-    public Double getFromAmount() {
+    public String getFromAmount() {
         return fromAmount;
     }
 
-    public void setFromAmount(Double fromAmount) {
+    public void setFromAmount(String fromAmount) {
         this.fromAmount = fromAmount;
     }
 
-    public Double getToAmount() {
+    public String getToAmount() {
         return toAmount;
     }
 
-    public void setToAmount(Double toAmount) {
+    public void setToAmount(String toAmount) {
         this.toAmount = toAmount;
     }
 
@@ -89,11 +93,19 @@ public class ConvertHistory {
         this.date = date;
     }
 
-    public Double getCourseOnDate() {
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public String getCourseOnDate() {
         return courseOnDate;
     }
 
-    public void setCourseOnDate(Double courseOnDate) {
+    public void setCourseOnDate(String courseOnDate) {
         this.courseOnDate = courseOnDate;
     }
 }
