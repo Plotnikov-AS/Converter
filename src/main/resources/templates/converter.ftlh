@@ -2,25 +2,24 @@
 <#import "parts/login.ftlh" as l>
 
 <@p.page>
-<link rel="stylesheet" type="text/css" href="css/ConverterStyle.css">
-<div class="container">
+<div>
     <h1>Конвертер</h1>
-    <form action="/history/save" method="post" class="form-one">
-        <label class="choice">
+    <form action="/history/save" method="post">
+        <label>
             <select name="fromCharcode">
                 <#list curCodes2Names as curCode2Name>
                     <option value="${curCode2Name['charcode']}">(${curCode2Name['charcode']}) ${curCode2Name['name']}</option>
                 </#list>
             </select>
         </label>
-        <label class="choice">
+        <label>
             <select name="toCharcode">
                 <#list curCodes2Names as curCode2Name>
                     <option value="${curCode2Name['charcode']}">(${curCode2Name['charcode']}) ${curCode2Name['name']}</option>
                 </#list>
             </select>
         </label>
-        <input type="number" min="0" name="from" class="result">
+        <br><input type="number" min="0" name="from">
         <button type="submit">Конвертировать</button>
     </form>
     <@l.logout/>

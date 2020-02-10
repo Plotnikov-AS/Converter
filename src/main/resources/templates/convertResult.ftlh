@@ -1,15 +1,20 @@
 <#import "parts/page.ftlh" as p>
 
 <@p.page>
-    <link rel="stylesheet" type="text/css" href="css/ConvertResStyle.css">
-    <div class="container">
+    <div>
         <h1>Результат</h1>
-        <article class="line">${from}</article>
-        <article class="line">${to}</article>
+        <table>
+            <tr>
+                <th>${from}</th>
+                <th>${to}</th>
+            </tr>
+            <tr>
+                <td>${fromAmount}</td>
+                <td>${convertRes}</td>
+            </tr>
+        </table>
 
-        <article class="line">${fromAmount}</article>
-        <article class="line">${convertRes}</article>
-        <a href="/converter">Конвертер</a>
+        <a href="/converter">Конвертер</a><br>
         <a href="/history">История транзакций</a>
     </div>
 </@p.page>

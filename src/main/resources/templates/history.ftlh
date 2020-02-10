@@ -1,7 +1,7 @@
 <#import "parts/page.ftlh" as p>
 
 <@p.page>
-    <div class="container-history">
+    <div>
         <form action="/search" method="post">
             <input type="date" name="dateStr" placeholder="Дата">
             <select name="fromCharcode">

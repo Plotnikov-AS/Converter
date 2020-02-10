@@ -27,7 +27,7 @@ public class HistoryController {
     private ConvertHistoryRepo convertHistoryRepo;
 
     @GetMapping
-    public String showHistory(Model model){
+    public String showHistory(Model model) {
         List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
         List<Map<Object, Object>> curCodes2Names = currencyRepo.findAllCharcodesAndNames();
 
@@ -51,8 +51,7 @@ public class HistoryController {
 
         if (fromCharcode.equals(toCharcode)) {
             toAmount = fromAmount;
-        }
-        else {
+        } else {
             toAmount = convert(fromAmount, toCharcode);
         }
 

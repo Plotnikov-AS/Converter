@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -28,15 +27,12 @@ public class ConverterController {
 
     @GetMapping("/converter")
     public String mainPage(Model model) {
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         if (currencyRepo.findByCharcode("RUB") == null ||
                 !dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))) {
             downloadCurrencies();
         }
-
         List<Map<Object, Object>> curCodes2Names = currencyRepo.findAllCharcodesAndNames();
-
         model.addAttribute("curCodes2Names", curCodes2Names);
         return "converter";
     }
@@ -52,12 +48,10 @@ public class ConverterController {
 
     @GetMapping("/convertResult/{convertHistory}")
     public String convertResult(@PathVariable ConvertHistory convertHistory, Model model) {
-
         model.addAttribute("convertRes", convertHistory.getToAmount());
         model.addAttribute("fromAmount", convertHistory.getFromAmount());
         model.addAttribute("from", convertHistory.getFromCurrency());
         model.addAttribute("to", convertHistory.getToCurrency());
-
         return "convertResult";
     }
 
