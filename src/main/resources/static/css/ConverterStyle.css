@@ -16,9 +16,22 @@ h1 {
     text-align: center;
 }
 
+.form-one {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.form-two {
+    height: 30px;
+    width: 80px;
+    padding: 6px 13px;
+    background-color: darkgrey;
+    margin: 20px auto;
+    display: flex;
+}
+
 .choice {
-    margin: 20px 20px;
-    display: inline-block;
+    margin: 0 auto;
 }
 
 select {
@@ -26,14 +39,15 @@ select {
 }
 
 .result {
-       width: 300px;
-       height: 30px;
-       margin: 0 20px;
+    width: 600px;
+    height: 30px;
+    margin: 30px auto;
+    text-align: center;
 }
 
 button {
+    height: 30px;
     padding: 5px 10px;
     background-color: darkgrey;
-    display: flex;
-    margin: 20px auto;
+    margin: 0 auto;
 }

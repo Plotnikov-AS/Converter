@@ -8,6 +8,6 @@
 
 <#macro logout>
 <form action="/logout" method="post">
-    <input type="submit" value="Sign Out"/>
+    <button type="submit" class="form-two">Sign out</button>
 </form>
 </#macro>

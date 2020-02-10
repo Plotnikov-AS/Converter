@@ -11,11 +11,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class MainController {
@@ -27,78 +31,65 @@ public class MainController {
 
     @GetMapping("/")
     public String index() {
-        return "index";
+        return "redirect:/converter";
     }
 
-    @GetMapping("/main")
+    @GetMapping("/converter")
     public String mainPage(Model model) {
-        Map<String, String> curCode2Name = downloadCurrencies();
-        model.addAttribute("curCode2Name", curCode2Name);
-
-        return "main";
-    }
-
-    public Map<String, String> downloadCurrencies() {
-        Set<Currency> currencies;
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
-        if (currencyRepo.findByCharcode("RUB") != null &&
-                dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))) {
-            currencies = new TreeSet<>(currencyRepo.findAll());
-        } else {
-            currencies = ParserXML.parse();
-            assert currencies != null;
-            for (Currency currency : currencies) {
-                currencyRepo.save(currency);
-            }
+        if (currencyRepo.findByCharcode("RUB") == null ||
+                !dateFormat.format(currencyRepo.findByCharcode("RUB").getDate().getTime()).equals(dateFormat.format(new Date()))) {
+            downloadCurrencies();
         }
-        Map<String, String> curCode2Name = new TreeMap<>();
+
+        List<Map<Object, Object>> curCodes2Names = currencyRepo.findAllCharcodesAndNames();
+
+        model.addAttribute("curCodes2Names", curCodes2Names);
+        return "converter";
+    }
+
+    public void downloadCurrencies() {
+        Set<Currency> currencies;
+        currencies = ParserXML.parse();
+        assert currencies != null;
         for (Currency currency : currencies) {
-            curCode2Name.put(currency.getName(), currency.getCharcode());
+            currencyRepo.save(currency);
         }
-
-        return curCode2Name;
     }
 
-    @PostMapping("/convert")
-    public String convert(@RequestParam("from") String fromAmountStr,
-                          @RequestParam("fromCode") String fromCharcode,
-                          @RequestParam("toCode") String toCharcode,
-                          Model model) {
+    @GetMapping("/convertResult/{convertHistory}")
+    public String convertResult(@PathVariable ConvertHistory convertHistory, Model model) {
+        List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
 
-        if (!fromAmountStr.isEmpty()) {
-            Double fromAmount = Double.parseDouble(fromAmountStr);
+        model.addAttribute("convertRes", convertHistory.getToAmount());
+        model.addAttribute("fromAmount", convertHistory.getFromAmount());
+        model.addAttribute("from", convertHistory.getFromCurrency());
+        model.addAttribute("to", convertHistory.getToCurrency());
+        model.addAttribute("histories", histories);
 
-            Double convertRes;
-            if (fromCharcode.equals(toCharcode)) {
-                convertRes = fromAmount;
-            } else {
-                Double toValue = currencyRepo.findByCharcode(toCharcode).getCourse();
-                Integer toNominal = currencyRepo.findByCharcode(toCharcode).getNominal();
-                convertRes = fromAmount * toValue / toNominal;
-            }
-            Double courseFrom = currencyRepo.findByCharcode(fromCharcode).getCourse() / currencyRepo.findByCharcode(fromCharcode).getNominal();
-            Double courseTo = currencyRepo.findByCharcode(toCharcode).getCourse() / currencyRepo.findByCharcode(toCharcode).getNominal();
-            Double courseOnDate = courseFrom / courseTo;
-
-            saveInHistory(fromCharcode, toCharcode, fromAmount, convertRes, courseOnDate);
-            List<ConvertHistory> histories = convertHistoryRepo.findTop5ByDateOrderByDateDesc(new Date());
-
-            model.addAttribute("convertRes", convertRes);
-            model.addAttribute("fromAmount", fromAmount);
-            model.addAttribute("from", currencyRepo.findByCharcode(fromCharcode).getName());
-            model.addAttribute("to", currencyRepo.findByCharcode(toCharcode).getName());
-            model.addAttribute("histories", histories);
-
-            return "convertResult";
-        }
-        return "redirect:/main";
+        return "convertResult";
     }
 
-    private void saveInHistory(String fromCharcode, String toCharcode,
-                               Double fromAmount, Double toAmount, Double courseOnDate) {
+    @PostMapping("/convert/save")
+    public String saveInHistory(@RequestParam("from") String fromAmountStr,
+                                @RequestParam("fromCode") String fromCharcode,
+                                @RequestParam("toCode") String toCharcode,
+                                Model model) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Date date = new Date();
+        Double courseFrom = currencyRepo.findByCharcode(fromCharcode).getCourse() / currencyRepo.findByCharcode(fromCharcode).getNominal();
+        Double courseTo = currencyRepo.findByCharcode(toCharcode).getCourse() / currencyRepo.findByCharcode(toCharcode).getNominal();
+        Double courseOnDate = courseFrom / courseTo;
+        Double fromAmount = Double.parseDouble(fromAmountStr);
+        Double toAmount;
+
+        if (fromCharcode.equals(toCharcode)) {
+            toAmount = fromAmount;
+        }
+        else {
+            toAmount = convert(fromAmount, toCharcode);
+        }
 
         ConvertHistory convertHistory = new ConvertHistory();
         convertHistory.setUserId(user.getId());
@@ -109,5 +100,16 @@ public class MainController {
         convertHistory.setDate(date);
         convertHistory.setCourseOnDate(courseOnDate);
         convertHistoryRepo.save(convertHistory);
+
+        model.addAttribute("from", fromAmountStr);
+        model.addAttribute("fromCode", fromCharcode);
+        model.addAttribute("toCode", toCharcode);
+        return "redirect:/convertResult/" + convertHistoryRepo.findLastId();
+    }
+
+    private Double convert(Double fromAmount, String toCharcode) {
+        Double toCourse = currencyRepo.findByCharcode(toCharcode).getCourse();
+        Integer toNominal = currencyRepo.findByCharcode(toCharcode).getNominal();
+        return fromAmount * toCourse / toNominal;
     }
 }
